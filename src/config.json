@@ -1,0 +1,16 @@
+{
+    "prefix": "!",
+    "gameCode": 5,
+    "commands": {
+        "ping": {
+            "name": "ping"
+        },
+        "reload": {
+            "name": "reload"
+        },
+        "test": {
+            "name": "test"
+        }
+    },
+    "hotload": true
+}
