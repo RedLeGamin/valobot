@@ -11,15 +11,15 @@ export async function run (client: ValoBot, interaction: ModalSubmitInteraction,
     var password = interaction.fields.getTextInputValue(ID_INPUT_PASS);
     
     var auth = await client.riotAuth.authenticate({username: username, password: password});
-    if (auth == "response") {
+    if(!auth) return interaction.reply("Une erreur a eu lieu");
+    if (auth.security_type == "response") {
+        client.db.createUser({id: interaction.user.id, ...auth.user_data})
         interaction.reply("Le login a marché mais flm de coder le reste");
     }
-    else if (auth == "multifactor") {
+    else if (auth.security_type == "multifactor") {
         interaction.reply("2AF detecté t'es ce genre de mec chiant toi")
     }
     else interaction.reply("Une erreur a eu lieu")
-
-
 }   
 
 const modalBuilder = new ModalBuilder().setCustomId("login").setTitle("🔒We do not store login infos");

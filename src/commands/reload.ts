@@ -7,7 +7,7 @@ const RELOAD_IN_PROGRESS = "Reloading...";
 
 export async function run (client: ValoBot, message: CommandInteraction, args: string[], tools: any) {
     client.log("loader", RELOAD_IN_PROGRESS);
-    message.reply(RELOAD_IN_PROGRESS);
+    await message.reply(RELOAD_IN_PROGRESS);
 
     var load = await client.reload(client);
     

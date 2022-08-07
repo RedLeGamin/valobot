@@ -58,7 +58,14 @@ export default class RiotAuth {
             this.client.log("debug", "Logged user " + user_id)
         }
         else return this.client.log("important", `Unknown security type has been detected while login : ${security_type}`);
-        return security_type;
+        const data: {security_type: string, user_data: user_data} = {
+            security_type: security_type,
+            user_data: {
+                token_id: id_token,
+                access_token: access_token,
+            },
+        };
+        return data;
     }
 
     async authenticate2FA () {

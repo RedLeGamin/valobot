@@ -23,12 +23,12 @@ export default class SupaBase {
         return users?.length;
     }
 
-    async createUser(user_data: {user: User, web_infos: {}}) {
-        var { user, web_infos } = user_data;
+    async createUser(user_data: user_data) { // TODO: remove any
         const { data, error } = await supabase
             .from('users')
-            .insert([
-            { id : user.id },
-        ])
+            .insert(
+             user_data 
+        )
+        console.log(error)
     }
 }
