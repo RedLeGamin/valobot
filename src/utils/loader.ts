@@ -12,15 +12,30 @@ export default async function loader(this: ValoBot) {
     const commandFiles = fs
       .readdirSync(__dirname + "/../commands")
       .filter((file: string) => file.endsWith(".js") || file.endsWith(".ts"));
+      const modalsFiles = fs
+        .readdirSync(__dirname + "/../modals")
+        .filter((file: string) => file.endsWith(".js") || file.endsWith(".ts"));
       
     this.commandsDelay = new Map();
     var commandsSlash = [];
       for (const file of commandFiles) {
+        try {
+          if(require.cache[require.resolve(`./commands/${file}`)]) delete require.cache[require.resolve(`./commands/${file}`)];
+        } catch {}
         const command = require(__dirname + `/../commands/${file}`);
         var commandName = file.split(".")[0]
         this.commandsDelay.set(commandName, new Map());
-        this.log("debug", "Loading command /" + commandName)
+        this.log("debug", "Loaded command /" + commandName)
         if(typeof command.slash == "object") commandsSlash.push(command.slash);
+      }
+
+      for (const file of modalsFiles) {
+        try {
+          if(require.cache[require.resolve(`./modals/${file}`)]) delete require.cache[require.resolve(`./modals/${file}`)];
+        } catch {}
+        const command = require(__dirname + `/../modals/${file}`);
+        var modalName = file.split(".")[0]
+        this.log("debug", "Loaded modal #" + modalName)
       }
 
     this.config = config;
@@ -31,10 +46,10 @@ export default async function loader(this: ValoBot) {
     if(this.readyAt != null && this.user) {
         this.user.setActivity(
             config.game, {
-              type: this.config.gameCode
+              type: this.config.status.type
             }
         );
-        await (async () => {
+        return await (async () => {
           if(!this.application) return;
             try {
               this.log("loader", 'Started refreshing application (/) commands.');
@@ -45,7 +60,8 @@ export default async function loader(this: ValoBot) {
                   this.log("loader", 'Successfully reloaded application (/) commands.');
             } catch (error) {
               this.log("error", error);
-            }
+              return error;
+            }          
           })();
     }
 }

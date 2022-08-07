@@ -4,3 +4,4 @@ src/**/*.js
 package-lock.json
 .env
 dist/
+samples/

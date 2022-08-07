@@ -1,11 +1,12 @@
 import { CommandInteraction } from "discord.js";
 import ValoBot from "src/ressources/Client";
+import { modal } from "../modals/login"
 
 export async function run (client:ValoBot, message:CommandInteraction, args:string[], tool:any):Promise<any> {
-    return message.reply("Pong!")
-  }
+      message.showModal(modal);
+}
   
 export const slash = {
-    "name": "ping",
-    "description": "Affiche le ping du bot"
+      "name": "login",
+      "description": "Login with your riot account"
 }

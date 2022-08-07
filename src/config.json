@@ -1,12 +1,19 @@
 {
     "prefix": "!",
-    "gameCode": 5,
+    "status": {
+        "type": 5,
+        "message": "la classe!"
+    },
+    "debug": true,
     "commands": {
         "ping": {
             "name": "ping"
         },
         "reload": {
             "name": "reload"
+        },
+        "login": {
+            "name": "login"
         },
         "test": {
             "name": "test"

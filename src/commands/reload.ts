@@ -1,15 +1,25 @@
-import { CommandInteraction, Message } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import ValoBot from "src/ressources/Client";
 
 const RELOAD_DONE = "Reload done!";
-const RELOAD_FAILED = "Reload failed!"; // I'm f*cking lazy that's crazy
+const RELOAD_FAILED = "Reload failed"; // I'm f*cking lazy that's crazy
 const RELOAD_IN_PROGRESS = "Reloading...";
 
 export async function run (client: ValoBot, message: CommandInteraction, args: string[], tools: any) {
     client.log("loader", RELOAD_IN_PROGRESS);
-    await client.reload(client);
-    client.log("loader", RELOAD_DONE);
-    message.reply(RELOAD_DONE);
+    message.reply(RELOAD_IN_PROGRESS);
+
+    var load = await client.reload(client);
+    
+    if(load) {
+        client.log("loader", RELOAD_FAILED);
+        message.editReply(RELOAD_FAILED + " (Please check logs for details)");
+    }
+    
+    else {
+        client.log("loader", RELOAD_DONE);
+        message.editReply(RELOAD_DONE);
+    }
 }
 
 export const slash = {

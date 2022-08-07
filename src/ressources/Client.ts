@@ -1,9 +1,12 @@
 import { Client, ClientOptions } from "discord.js";
 import loader from "../utils/loader";
+import RiotAuth from "./RiotAuth";
+import SupaBase from "./SupaBase";
+import ValorantAPI from "./ValorantAPI";
 
 export interface config {
     prefix: string
-    gameCode: number;
+    status: { type: number, message: string };
     commands: any;
     hotload: boolean;
     debug?: boolean;
@@ -20,6 +23,9 @@ export default class ValoBot extends Client {
     embedColor: string;
     hotload: boolean;
     debug: boolean;
+    riotAuth: RiotAuth;
+    valorantAPI: ValorantAPI;
+    db: SupaBase;
 
     constructor(options: ClientOptions, config: config) {
         super(options);
@@ -31,7 +37,10 @@ export default class ValoBot extends Client {
         this.config = config;
         this.embedColor = "#ffffff";
         this.hotload = config.hotload;
-        this.debug = config.debug || false;
+        this.debug = config.debug ?? false;
+        this.riotAuth = new RiotAuth(this);
+        this.valorantAPI = new ValorantAPI(this);
+        this.db = new SupaBase(this);
     }
 
     isAdmin(user: any) {
@@ -60,6 +69,9 @@ export default class ValoBot extends Client {
 
     log(type: string, content: any) {
         if(type == "debug" && !this.config.debug) return;
-        console.log(content)
+        var log_type = `[${type.toUpperCase()}]`, content;
+        if(type == "debug") console.debug(log_type, content);
+        else if(type == "error") console.error(log_type, content);
+        else console.log(log_type, content);
     }
 }
