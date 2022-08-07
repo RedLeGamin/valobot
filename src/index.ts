@@ -17,7 +17,7 @@ client.log("log", "Bot is starting...");
 client.on("ready", async () => {
     await client.reload();
     client.log("log", "Bot is ready !");
-    client.db.register();
+    // client.db.register();
 })
 
 client.on("interactionCreate", async (interaction):Promise<any> => {
