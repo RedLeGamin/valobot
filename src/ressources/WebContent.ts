@@ -46,6 +46,5 @@ export const endpoints = {
                 "Authorization": "{bearer}"
             }
         }
-        
     }
 }

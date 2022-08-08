@@ -13,7 +13,7 @@ export async function run (client: ValoBot, interaction: ModalSubmitInteraction,
     var auth = await client.riotAuth.authenticate({username: username, password: password});
     if(!auth) return interaction.reply("Une erreur a eu lieu");
     if (auth.security_type == "response") {
-        client.db.createUser({id: interaction.user.id, ...auth.user_data})
+        client.db.createUser({id: interaction.user.id}, { user_id: interaction.user.id, ...auth.riot_data })
         interaction.reply("Le login a marché mais flm de coder le reste");
     }
     else if (auth.security_type == "multifactor") {
@@ -31,7 +31,7 @@ const emailInput = new TextInputBuilder().setCustomId(ID_INPUT_USERNAME)
 const passwordInput = new TextInputBuilder().setCustomId(ID_INPUT_PASS)
     .setLabel("Valorant Password")
     .setStyle(TextInputStyle.Short)
-      
+        
 const firstActionRow = new ActionRowBuilder().addComponents(emailInput);
 const secondActionRow = new ActionRowBuilder().addComponents(passwordInput);
 

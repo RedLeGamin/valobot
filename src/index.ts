@@ -17,7 +17,7 @@ client.log("log", "Bot is starting...");
 client.on("ready", async () => {
     await client.reload();
     client.log("log", "Bot is ready !");
-    // client.db.register();
+    console.log(await client.db.getUser({id: "219380115602145280"}, true));
 })
 
 client.on("interactionCreate", async (interaction):Promise<any> => {
@@ -25,8 +25,9 @@ client.on("interactionCreate", async (interaction):Promise<any> => {
   if(interaction.isModalSubmit()) {
     var command = interaction.customId;
     try {
-      if(client.config.hotload == true && require.cache[require.resolve(`./modals/${command}`)]) delete require.cache[require.resolve(`./modals/${command}`)];
-      let commandFile = require(`./modals/${command}`);
+      var file_location = __dirname + `/modals/${command}`;
+      if(client.config.hotload && require.cache[require.resolve(file_location)]) delete require.cache[require.resolve(file_location)];
+      let commandFile = require(file_location);
       // @ts-ignore
       interaction.reply = interaction.editReply;
       // @ts-ignore
@@ -81,8 +82,10 @@ client.on("interactionCreate", async (interaction):Promise<any> => {
       if (commandData.disable) channel.send("`(Commande désactivée" + (whitelisted ? " (whitelist bypass)" : "") + ")`");
 
     try {
-        if(client.config.hotload == true && require.cache[require.resolve(`./commands/${command}`)]) delete require.cache[require.resolve(`./commands/${command}`)];
-        let commandFile = require(`./commands/${command}`);
+
+        var file_location = __dirname + `/commands/${command}`;
+        if(client.config.hotload && require.cache[require.resolve(file_location)]) delete require.cache[require.resolve(file_location)];
+        let commandFile = require(file_location);
         // @ts-ignore
         interaction.author = interaction.user;
         commandFile.run(client, interaction, args, {isInteraction: true});

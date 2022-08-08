@@ -19,10 +19,11 @@ export default async function loader(this: ValoBot) {
     this.commandsDelay = new Map();
     var commandsSlash = [];
       for (const file of commandFiles) {
+        var file_location = __dirname + `/../commands/${file}`
         try {
-          if(require.cache[require.resolve(`./commands/${file}`)]) delete require.cache[require.resolve(`./commands/${file}`)];
+          if(require.cache[require.resolve(file_location)]) delete require.cache[require.resolve(file_location)];
         } catch {}
-        const command = require(__dirname + `/../commands/${file}`);
+        const command = require(file_location);
         var commandName = file.split(".")[0]
         this.commandsDelay.set(commandName, new Map());
         this.log("debug", "Loaded command /" + commandName)
@@ -30,10 +31,11 @@ export default async function loader(this: ValoBot) {
       }
 
       for (const file of modalsFiles) {
+        var file_location = __dirname + `/../modals/${file}`;
         try {
-          if(require.cache[require.resolve(`./modals/${file}`)]) delete require.cache[require.resolve(`./modals/${file}`)];
+          if(require.cache[require.resolve(file_location)]) delete require.cache[require.resolve(file_location)];
         } catch {}
-        const command = require(__dirname + `/../modals/${file}`);
+        const command = require(file_location);
         var modalName = file.split(".")[0]
         this.log("debug", "Loaded modal #" + modalName)
       }
