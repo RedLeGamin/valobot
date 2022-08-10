@@ -59,4 +59,5 @@ interface skin {
     assetPath?: string
     chromas?: {}[]
     levels?: {}[]
+    price?: number
 }
