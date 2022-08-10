@@ -17,6 +17,9 @@
         },
         "test": {
             "name": "test"
+        },
+        "shop": {
+            "name": "shop"
         }
     },
     "hotload": true

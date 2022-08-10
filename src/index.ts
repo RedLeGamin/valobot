@@ -17,7 +17,16 @@ client.log("log", "Bot is starting...");
 client.on("ready", async () => {
     await client.reload();
     client.log("log", "Bot is ready !");
-    console.log(await client.db.getUser({id: "219380115602145280"}, true));
+    var user = await client.db.getUser({"id": "219380115602145280"});
+
+    //console.log(await client.valorantAPI.getSkins());
+    //console.log(await client.valorantAPI.getSkin({uuid:'decd0962-453a-1551-47e1-1287aafb5a27'}));
+    // if(user && user.riot_users.length > 0) user.riot_users[0].getShop().then(s => console.log(s))
+    // if(user && user.riot_users.length > 0) user.riot_users[0].getShop().then(console.log)
+    if(user && user.riot_users.length > 0) await user.riot_users[0].refreshCookies();
+    //if(!user || !user.riot_users || !user.riot_users[0]) return;
+    //client.riotAuth.refresh_token(user.riot_users[0].cookies!);
+    // client.valorantAPI.getShop(user.riot_users[0]).then(console.log);
 })
 
 client.on("interactionCreate", async (interaction):Promise<any> => {

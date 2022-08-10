@@ -13,11 +13,12 @@ export async function run (client: ValoBot, interaction: ModalSubmitInteraction,
     var auth = await client.riotAuth.authenticate({username: username, password: password});
     if(!auth) return interaction.reply("Une erreur a eu lieu");
     if (auth.security_type == "response") {
-        client.db.createUser({id: interaction.user.id}, { user_id: interaction.user.id, ...auth.riot_data })
+        await client.db.createUser({id: interaction.user.id});
+        await client.db.createRiotUser({ user_id: interaction.user.id, ...auth.riot_data })
         interaction.reply("Le login a marché mais flm de coder le reste");
     }
     else if (auth.security_type == "multifactor") {
-        interaction.reply("2AF detecté t'es ce genre de mec chiant toi")
+        // interaction.reply("2AF detecté t'es ce genre de mec chiant toi")
     }
     else interaction.reply("Une erreur a eu lieu")
 }   

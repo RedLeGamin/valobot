@@ -1,11 +1,12 @@
 import { Client, ClientOptions } from "discord.js";
+import NodeCache from "node-cache";
 import loader from "../utils/loader";
 import RiotAuth from "./RiotAuth";
 import SupaBase from "./SupaBase";
 import ValorantAPI from "./ValorantAPI";
 
 export interface config {
-    prefix: string
+    prefix: string;
     status: { type: number, message: string };
     commands: any;
     hotload: boolean;
@@ -26,6 +27,7 @@ export default class ValoBot extends Client {
     riotAuth: RiotAuth;
     valorantAPI: ValorantAPI;
     db: SupaBase;
+    cache;
 
     constructor(options: ClientOptions, config: config) {
         super(options);
@@ -33,11 +35,14 @@ export default class ValoBot extends Client {
         this.prefix = config.prefix;
         this.lastCommandId;
         this.lastInteractionId;
+        this.cache = new NodeCache();
         this.commandsDelay = new Map();
         this.config = config;
         this.embedColor = "#ffffff";
         this.hotload = config.hotload;
         this.debug = config.debug ?? false;
+
+        // controllers
         this.riotAuth = new RiotAuth(this);
         this.valorantAPI = new ValorantAPI(this);
         this.db = new SupaBase(this);

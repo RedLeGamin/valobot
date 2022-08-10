@@ -6,11 +6,12 @@ export const headers = {
 
 export const endpoints = {
     main: {
-        "link": "https://auth.riotgames.com",
-        "route": "/"
+        link: "https://auth.riotgames.com",
+        route: "/"
     },
     authorization: {
         link: "https://auth.riotgames.com/api/v1/authorization",
+        link_cookies: "https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&scope=account%20openid&nonce=1",
         route: "/api/v1/authorization",
         bodys: {
             post: {
@@ -26,6 +27,11 @@ export const endpoints = {
                 "type": "auth",
                 "username": "{username}",
                 "password": "{password}"
+            },
+            put_2f: {
+                "type": "multifactor",
+                "code": "{code}",
+                "rememberDevice": true
             }
         }
     },
