@@ -98,7 +98,7 @@ export default class RiotAuth {
 
     async authenticate2FA (code: string, cookies?: string) {
 
-        var { authorization } = endpoints;
+        var { authorization, entitlements, userinfo } = endpoints;
 
         var session = axios.create({headers: headers, withCredentials: true});
 
@@ -111,8 +111,46 @@ export default class RiotAuth {
         // TODO: Fix request fail
         var request = await session.put(authorization.link, body, {headers: {Cookie: cookies}}).catch(console.log);
         if(!request) return console.error(`Auth PUT request failed ${authorization.link}`);
-        console.log(request);
-        return "t";
+        
+        var security_type = request.data['type'];
+
+        if (security_type == "response") {
+            var uri = request.data['response']['parameters']['uri'];
+
+            var access_token = uri.match(/access_token=([^&]+)/)[1];
+            var id_token = uri.match(/id_token=([^&]+)/)[1];
+            var expires_in = parseInt(uri.match(/expires_in=([^&]+)/)[1])*1000 + Date.now();
+            var bearer = `Bearer ${access_token}`
+            //@ts-ignore
+            cookies = request.headers["set-cookie"].join("; ");
+        
+            request = await session.post(entitlements.link, {}, {headers: {Authorization: bearer}}).catch(() => {});
+            if(!request) return console.error(`Auth POST request failed ${entitlements.link}`);
+        
+            var entitlements_token = request.data['entitlements_token'];
+            
+            request = await session.post(userinfo.link, {}, {headers: {Authorization: bearer}}).catch(() => {});
+            if(!request) return console.error(`Auth POST request failed ${userinfo.link}`);
+        
+            var user_id = request.data["sub"]
+        }
+        else return this.client.log("important", `Unknown security type has been detected while login : ${security_type}`);
+
+        const data: {security_type: string, user_data: db_user, riot_data: db_riot_user} = {
+            security_type: security_type,
+            user_data: {
+            },
+            riot_data: {
+                id: user_id,
+                token_id: id_token,
+                access_token: access_token,
+                expiry_token: expires_in,
+                entitlements_token: entitlements_token,
+                cookies: cookies
+            }
+        };
+        return data;
+        
     }
 
     async refresh_token(cookies: string) {

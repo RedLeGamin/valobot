@@ -67,5 +67,4 @@ export default class RiotUser implements riot_user {
     expiry_token: number;
     entitlements_token: string;
     cookies: string;
-
 }

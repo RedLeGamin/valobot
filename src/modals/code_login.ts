@@ -13,7 +13,7 @@ export async function run (client: ValoBot, interaction: ModalSubmitInteraction,
     var auth = await client.riotAuth.authenticate2FA(code, user.cookies);
     if(!auth) return interaction.reply("Une erreur a eu lieu");
 
-    //client.db.createRiotUser(auth)
+    await client.db.createRiotUser({user_id: user.id, ...auth.riot_data})
     interaction.reply("Le login a marché mais flm de coder le reste");
         
 }   
