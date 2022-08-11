@@ -4,7 +4,6 @@ import ValoBot from "./Client";
 
 export default class RiotUser implements riot_user {
     client: ValoBot;
-    need_refresh: boolean;
 
 
     constructor(client:ValoBot,user_data: riot_user) {
@@ -23,15 +22,18 @@ export default class RiotUser implements riot_user {
         this.expiry_token = user_data.expiry_token;
         this.entitlements_token = user_data.entitlements_token;
         this.cookies = user_data.cookies ?? "";
-
-        this.need_refresh = Date.now() > this.expiry_token;
     }
 
     cookiesToText() {
         return `tdid=${this.token_id}`
     }
 
-    async refreshCookies() {
+    need_refresh() {
+        return Date.now() > this.expiry_token;
+    }
+
+    async refreshCookies(force = false) {
+        if(!force && !this.need_refresh()) return this.cookies;
         var cookies = await this.client.riotAuth.refresh_token(this.cookies);
         if(!cookies) return;
         this.cookies = cookies.cookies
@@ -40,6 +42,7 @@ export default class RiotUser implements riot_user {
         this.expiry_token = cookies.expires_in
         
         this.update({cookies: cookies.cookies, access_token: cookies.access_token, token_id: cookies.id_token, expiry_token: cookies.expires_in})
+        return this.cookies;
     }
 
     update(user_data: db_riot_user) {

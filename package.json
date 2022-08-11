@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node --tls-cipher-list='TLS_CHACHA20_POLY1305_SHA256' dist/index.js",
+    "start": "tsc && node --tls-cipher-list='TLS_CHACHA20_POLY1305_SHA256' dist/index.js",
     "dev": "nodemon --exec 'npm start'",
     "test": "ts-node tests/supabase.ts -T"
   },
