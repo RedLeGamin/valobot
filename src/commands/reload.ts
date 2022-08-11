@@ -2,7 +2,7 @@ import { CommandInteraction } from "discord.js";
 import ValoBot from "src/ressources/Client";
 
 const RELOAD_DONE = "Reload done!";
-const RELOAD_FAILED = "Reload failed"; // I'm f*cking lazy that's crazy
+const RELOAD_FAILED = "Reload failed";
 const RELOAD_IN_PROGRESS = "Reloading...";
 
 export async function run (client: ValoBot, message: CommandInteraction, args: string[], tools: any) {

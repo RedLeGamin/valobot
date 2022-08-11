@@ -28,7 +28,7 @@ interface user {
     created_at: string;
     is_dm_sendable: boolean;
     has_alert: boolean;
-    riot_users: riot_user[];
+    riot_users: any[];
     cookies?: string;
 }
 
@@ -60,4 +60,30 @@ interface skin {
     chromas?: {}[]
     levels?: {}[]
     price?: number
+}
+
+interface riot_user_info {
+    country: string
+    sub: string
+    email_verified: boolean,
+    player_plocale: string,
+    country_at: string //?
+    pw: any
+    phone_number_verified: boolean
+    account_verified: boolean
+    ppid: any // ?
+    player_locale: string 
+    acct: acct
+    age: number
+    jti: string
+    affinity: any
+  }
+
+interface acct {
+    type: number
+    state: string
+    adm: boolean
+    game_name: string
+    tag_line: string
+    created_at: number
 }

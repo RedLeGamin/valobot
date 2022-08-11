@@ -19,7 +19,7 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
       if (auth.security_type == "response") {
             client.db.createUser({id: interaction.user.id});
             client.db.createRiotUser({ user_id: interaction.user.id, ...auth.riot_data })
-            return interaction.reply("Le login a marché mais flm de coder le reste");
+            return interaction.reply(`Félicitation, wow, bravo ${auth.riot_data.username}${auth.riot_data.tag} tout le monde est fier de toi`);
       }
       else if (auth.security_type == "multifactor") {
             //@ts-ignore

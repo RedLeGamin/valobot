@@ -14,7 +14,7 @@ export async function run (client: ValoBot, interaction: ModalSubmitInteraction,
     if(!auth) return interaction.reply("Une erreur a eu lieu");
 
     await client.db.createRiotUser({user_id: user.id, ...auth.riot_data})
-    interaction.reply("Le login a marché mais flm de coder le reste");
+    interaction.reply(`Félicitation, wow, bravo ${auth.riot_data.username}${auth.riot_data.tag} tout le monde est fier de toi`);
         
 }   
 

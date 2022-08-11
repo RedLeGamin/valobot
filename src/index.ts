@@ -18,12 +18,14 @@ client.on("ready", async () => {
     await client.reload();
     client.log("log", "Bot is ready !");
     var user = await client.db.getUser({"id": "219380115602145280"});
+    console.log(user)
 
     //console.log(await client.valorantAPI.getSkins());
     //console.log(await client.valorantAPI.getSkin({uuid:'decd0962-453a-1551-47e1-1287aafb5a27'}));
     // if(user && user.riot_users.length > 0) user.riot_users[0].getShop().then(s => console.log(s))
     // if(user && user.riot_users.length > 0) user.riot_users[0].getShop().then(console.log)
-    if(user && user.riot_users.length > 0) await user.riot_users[0].refreshCookies();
+    // if(user && user.riot_users.length > 0) await user.riot_users[0].refreshCookies();
+    if(user && user.riot_users.length > 0) console.log(await client.riotAuth.getEntitlementsToken(user.riot_users[0].access_token))
     //if(!user || !user.riot_users || !user.riot_users[0]) return;
     //client.riotAuth.refresh_token(user.riot_users[0].cookies!);
     // client.valorantAPI.getShop(user.riot_users[0]).then(console.log);
@@ -31,6 +33,7 @@ client.on("ready", async () => {
 
 client.on("interactionCreate", async (interaction):Promise<any> => {
 
+  var tools:any = {};
   if(interaction.isModalSubmit()) {
     var command = interaction.customId;
     try {
@@ -41,7 +44,12 @@ client.on("interactionCreate", async (interaction):Promise<any> => {
       interaction.reply = interaction.editReply;
       // @ts-ignore
       interaction.author = interaction.user;
-      commandFile.run(client, interaction);
+
+      tools = {
+        getLocale: (target:string, ...args: string[]) => client.getLocale(interaction.locale, ["commands", command, target], ...args)
+      }
+
+      commandFile.run(client, interaction, tools);
     } catch (e) {
       client.log("error", e);
   }
@@ -97,7 +105,14 @@ client.on("interactionCreate", async (interaction):Promise<any> => {
         let commandFile = require(file_location);
         // @ts-ignore
         interaction.author = interaction.user;
-        commandFile.run(client, interaction, args, {isInteraction: true});
+
+        
+        tools = {
+          isInteraction: true,
+          getLocale: (target:string, ...args: string[]) => client.getLocale(interaction.locale, ["commands", command, target], ...args)
+        }
+
+        commandFile.run(client, interaction, args, tools);
     } catch (e) {
         client.log("error", e);
     }

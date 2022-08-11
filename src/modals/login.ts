@@ -1,3 +1,5 @@
+// Unused, this will be used if we are able to chain modals on day
+
 import { ActionRowBuilder, ModalBuilder, ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js";
 import ValoBot from "src/ressources/Client";
 

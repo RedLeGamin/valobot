@@ -5,6 +5,11 @@ import RiotAuth from "./RiotAuth";
 import SupaBase from "./SupaBase";
 import ValorantAPI from "./ValorantAPI";
 
+import fr from "../langs/fr.json";
+const lang:any = {
+    "fr": fr
+}
+
 export interface config {
     prefix: string;
     status: { type: number, message: string };
@@ -79,4 +84,17 @@ export default class ValoBot extends Client {
         else if(type == "error") console.error(log_type, content);
         else console.log(log_type, content);
     }
+
+    getLocale(language:string, strings:string[], ...vars:string[]) {
+        console.log("language =", language)
+        var locale = lang[language];
+        for(var string of strings) {
+            locale = locale[string];
+        };
+     
+        let count = 0;
+        locale = locale.replace(/%VAR%/g, () => vars[count] !== null ? vars[count] : "%VAR%");
+     
+        return locale;
+     }
 }

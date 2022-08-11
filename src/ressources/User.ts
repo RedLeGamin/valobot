@@ -19,6 +19,7 @@ export default class User implements user {
         this.has_alert = user_data.has_alert;
         this.cookies = user_data.cookies || "";
         this.riot_users = [];
+        console.log(user_data)
         for(let riot_user of user_data.riot_users) {
             this.riot_users.push(new RiotUser(this.client, riot_user));
         }

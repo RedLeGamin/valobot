@@ -47,7 +47,7 @@ export default async function loader(this: ValoBot) {
 
     if(this.readyAt != null && this.user) {
         this.user.setActivity(
-            config.game, {
+            `${await this.db.fetchUserSize()} Users`, {
               type: this.config.status.type
             }
         );

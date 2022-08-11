@@ -1,0 +1,7 @@
+{
+    "commands": {
+        "ping": {
+            "pong": "Pong! %VAR%"
+        }
+    }
+}

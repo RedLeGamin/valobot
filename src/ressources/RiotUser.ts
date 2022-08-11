@@ -7,6 +7,7 @@ export default class RiotUser implements riot_user {
 
 
     constructor(client:ValoBot,user_data: riot_user) {
+        console.log("debug",`Generatin new RiotUser\n${user_data}`)
         this.client = client;
         this.id = user_data.id;
         this.created_at = user_data.created_at;
@@ -51,6 +52,18 @@ export default class RiotUser implements riot_user {
 
     getShop() {
         return this.client.valorantAPI.getUserShop(this);
+    }
+
+    getInfo() {
+        return this._getInfo();
+    }
+
+    private async _getInfo() {
+        var data = await this.client.riotAuth.getUserInfo(this.access_token);
+        if(!data) return;
+        var acct = data.acct;
+        this.update({ tag:acct.tag_line, username: acct.game_name, region: data.country })
+        return data;
     }
 
     id: string;

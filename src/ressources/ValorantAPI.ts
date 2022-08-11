@@ -20,7 +20,6 @@ export default class ValorantAPI {
         const session = axios.create({headers: headers, withCredentials: true});
         var request = await session.get(`https://pd.eu.a.pvp.net/store/v2/storefront/${user_id}`, {headers: {Authorization: bearer, "X-Riot-Entitlements-JWT": entitlements_token}}).catch(() => {});
         if(!request) return console.error("Shop GET request failed");
-        console.log(request)
         return request.data;
     }
 
@@ -44,7 +43,6 @@ export default class ValorantAPI {
                 shop.skins.push(skin);
             }
         }
-
         return shop;
     }
 
@@ -62,7 +60,6 @@ export default class ValorantAPI {
         var skins:skin[] = request.data["data"];
         this.cache.set("skins", skins);
         return skins;
-        console.log(request)
     }
 
     async getSkinPrice(user_data: riot_user, skin_id: string, ignore_cache = false) {

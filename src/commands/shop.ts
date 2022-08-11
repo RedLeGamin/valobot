@@ -5,7 +5,7 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
     interaction.deferReply();
     var user = await client.db.getUser(interaction.user);
     if(!user) return interaction.editReply("Hahaha t'es pas register ^^");
-    if(!user.riot_users) return interaction.editReply("Dis donc t'as pas mis de compte riot ou quoi XD");
+    if(!user.riot_users.length) return interaction.editReply("Dis donc t'as pas mis de compte riot ou quoi XD");
     var user_riot = user.riot_users[0];
     var refresh = await user_riot.refreshCookies();
     if(!refresh) return interaction.editReply("Cookies expired");

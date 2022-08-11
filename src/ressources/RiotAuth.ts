@@ -48,7 +48,6 @@ export default class RiotAuth {
             var temp_cookies:[] = request.headers["set-cookie"];
             temp_cookies?.shift();
             cookies = temp_cookies?.join("; ")
-            console.log(cookies)
             const multifactor = request.data['multifactor'];
             const data: {security_type: "multifactor", email:string, cookies: string} = {
                 security_type: security_type,
@@ -68,15 +67,13 @@ export default class RiotAuth {
             //@ts-ignore
             cookies = request.headers["set-cookie"].join("; ");
         
-            request = await session.post(entitlements.link, {}, {headers: {Authorization: bearer}}).catch(() => {});
-            if(!request) return console.error(`Auth POST request failed ${entitlements.link}`);
-        
-            var entitlements_token = request.data['entitlements_token'];
+            var entitlements_token = await this.getEntitlementsToken(access_token);
+            if(!entitlements_token) return;
             
-            request = await session.post(userinfo.link, {}, {headers: {Authorization: bearer}}).catch(() => {});
-            if(!request) return console.error(`Auth POST request failed ${userinfo.link}`);
-        
-            var user_id = request.data["sub"]
+            var user_info = await this.getUserInfo(access_token);
+            if(!user_info) return;
+            var user_id = user_info.sub;
+            var acct = user_info.acct ?? {};
         }
         else return this.client.log("important", `Unknown security type has been detected while login : ${security_type}`);
 
@@ -90,7 +87,10 @@ export default class RiotAuth {
                 access_token: access_token,
                 expiry_token: expires_in,
                 entitlements_token: entitlements_token,
-                cookies: cookies
+                cookies: cookies,
+                tag: acct.tag_line,
+                username: acct.game_name,
+                region: user_info.country,
             }
         };
         return data;
@@ -124,15 +124,13 @@ export default class RiotAuth {
             //@ts-ignore
             cookies = request.headers["set-cookie"].join("; ");
         
-            request = await session.post(entitlements.link, {}, {headers: {Authorization: bearer}}).catch(() => {});
-            if(!request) return console.error(`Auth POST request failed ${entitlements.link}`);
-        
-            var entitlements_token = request.data['entitlements_token'];
+            var entitlements_token = await this.getEntitlementsToken(access_token);
+            if(!entitlements_token) return;
             
-            request = await session.post(userinfo.link, {}, {headers: {Authorization: bearer}}).catch(() => {});
-            if(!request) return console.error(`Auth POST request failed ${userinfo.link}`);
-        
-            var user_id = request.data["sub"]
+            var user_info = await this.getUserInfo(access_token);
+            if(!user_info) return;
+            var user_id = user_info.sub;
+            var acct = user_info.acct ?? {};
         }
         else return this.client.log("important", `Unknown security type has been detected while login : ${security_type}`);
 
@@ -146,11 +144,33 @@ export default class RiotAuth {
                 access_token: access_token,
                 expiry_token: expires_in,
                 entitlements_token: entitlements_token,
-                cookies: cookies
+                cookies: cookies,
+                tag: acct.tag_line,
+                username: acct.game_name,
+                region: user_info.country,
             }
         };
         return data;
-        
+    }
+
+    async getUserInfo(access_token:string) {
+        const { userinfo } = endpoints;
+        var session = axios.create({headers: headers, withCredentials: true, maxRedirects: 0});
+
+        var request = await session.post(userinfo.link, {} ,{headers: {Authorization: `Bearer ${access_token}`}}).catch(console.log);
+        if(!request) return this.client.log("error", `Auth POST request failed : Cannot fetch user info`);
+        var riot_user_info:riot_user_info = request.data;
+        return riot_user_info;
+    }
+
+    async getEntitlementsToken(access_token: string) {
+        const { entitlements } = endpoints;
+        var session = axios.create({headers: headers, withCredentials: true, maxRedirects: 0});
+
+        var request = await session.post(entitlements.link, {} ,{headers: {Authorization: `Bearer ${access_token}`}}).catch(console.log);
+        if(!request) return this.client.log("error", `Auth POST request failed : Cannot fetch entitlements token`);
+        var entitlements_token:string = request.data["entitlements_token"];
+        return entitlements_token;
     }
 
     async refresh_token(cookies: string) {

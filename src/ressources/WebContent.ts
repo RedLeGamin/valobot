@@ -49,7 +49,7 @@ export const endpoints = {
         route: "/userinfo",
         bodys: {
             post: {
-                "Authorization": "{bearer}"
+                "Authorization": "Bearer {access_token}"
             }
         }
     }
