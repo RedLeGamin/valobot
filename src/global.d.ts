@@ -60,6 +60,7 @@ interface skin {
     chromas?: {}[]
     levels?: {}[]
     price?: number
+    discountPrice?: number
     currency?: currency;
 }
 
@@ -99,4 +100,14 @@ interface currency {
 
 interface uuid_resolver {
     uuid: string
+}
+
+interface bundle {
+    uuid?: string
+    displayName?: string
+    displayIcon?: string
+    skins?: skin[]
+    price?: number
+    discountPrice?: number
+    currency?: currency;
 }

@@ -11,31 +11,32 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
     if(!refresh) return interaction.editReply("Cookies expired");
     var shop = await user_riot.getShop();
     if(!shop) return interaction.editReply("Meccc t'as pas de shop wtf!!?");
-    var skins = shop.skins;
+    
     var bundles = shop.bundles;
     var embeds:EmbedBuilder[] = [];
 
     for(let bundle of bundles) {
+        let skins = bundle.skins;
         let embed = new EmbedBuilder()
             .setTitle(`Bundle en avant: ${bundle.displayName}`)
             .setImage(bundle.displayIcon!)
             .setDescription(`${bundle.currency?.displayName} **${bundle.discountPrice}** ~~${bundle.price}~~`)
             .setColor("#ff4655")
         embeds.push(embed)
-    }
 
-    for(let skin of skins) {
-        let embed = new EmbedBuilder()
-            .setAuthor({name: skin.displayName!})
-            .setThumbnail(skin.displayIcon!)
-            .setDescription(`${skin.currency?.displayName} **${skin.price}**`)
-            .setColor("#202225")
-        embeds.push(embed)
+        if(skins) for(let skin of skins) {
+            let embed = new EmbedBuilder()
+                .setAuthor({name: skin.displayName!})
+                .setThumbnail(skin.displayIcon!)
+                .setDescription(`${skin.currency?.displayName} **${skin.price}**`)
+                .setColor("#202225")
+            embeds.push(embed)
+        }
     }
     interaction.editReply({embeds: embeds});
 }
   
 export const slash = {
-    "name": "shop",
-    "description": "Affiche ton putain de shop"
+    "name": "bundle",
+    "description": "Affiche tes putains de bundles"
 }

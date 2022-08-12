@@ -20,6 +20,9 @@
         },
         "shop": {
             "name": "shop"
+        },
+        "bundle": {
+            "name": "bundle"
         }
     },
     "hotload": true

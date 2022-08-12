@@ -28,26 +28,38 @@ export default class ValorantAPI {
         var request = await session.get(`https://pd.eu.a.pvp.net/store/v2/storefront/${user_resolver.id}`, {headers: {Authorization: `Bearer ${user_resolver.access_token}`, "X-Riot-Entitlements-JWT": user_resolver.entitlements_token!}}).catch(console.log);
         if(!request) return;
         var data = request.data;
-        var shop: {skins: skin[], bundles: any[]}= {
+        console.log(data["FeaturedBundle"])
+        var shop: {skins: skin[], bundles: bundle[]}= {
             skins: [],
             bundles: []
         };
         
         var skin:string;
         const skins = data["SkinsPanelLayout"]["SingleItemOffers"];
+        const bundles = data["FeaturedBundle"]["Bundles"];
+
         for(let skin_temp in skins) {
             let skin_id = skins[skin_temp];
-            let currency_id = skin_temp;
             this.client.log("debug", `Looking for ${skin_id} skin`)
-            let skin = await this.getSkin({uuid: skin_id})
-            let price = await this.getSkinPrice(user_resolver, skin_id);
-            
+            let skin = await this.getSkinAndPrice(user_resolver, {uuid: skin_id});
             if(skin) {
-                if(price) {
-                    skin.price = price.price;
-                    skin.currency = price.currency;
-                }
                 shop.skins.push(skin);
+            }
+        }
+
+        for(let bundle_temp of bundles) {
+            let bundle_id = bundle_temp["DataAssetID"];
+            let currency_id = bundle_temp["CurrencyID"];
+            let skins = bundle_temp["Items"];
+            var skins_resolver:skin[] =[];
+            for(let skin of skins) {
+                skins_resolver.push(skin);
+            }
+            this.client.log("debug", `Looking for ${bundle_id} bundle`)
+            let bundle = await this.getBundleAndPrice(user_resolver, {uuid: bundle_id}, skins_resolver);
+            
+            if(bundle) {   
+                shop.bundles.push(bundle);
             }
         }
         return shop;
@@ -59,6 +71,68 @@ export default class ValorantAPI {
         return skins.find(s => compareObjects(skin_resolver, s));
     }
 
+    async getSkinAndPrice(user_resolver: riot_user, skin_resolver: skin) {
+        var skins = await this.getSkins();
+        if(!skins) return;
+        var skin = skins.find(s => compareObjects(skin_resolver, s));
+        if(!skin) return;
+        var price = await this.getSkinPrice(user_resolver, skin_resolver.uuid!);
+        skin.price = price?.price;
+        skin.currency = price?.currency;
+        return skin;
+    }
+
+    async getBundle(bundle_resolver: bundle) {
+        var bundles = await this.getBundles();
+        if(!bundles) return;
+        var bundle = bundles.find(b => compareObjects(bundle_resolver, b));
+        if(!bundle) return;
+        bundle.skins = []
+        if(bundle_resolver.skins) {
+            for(let skin of bundle_resolver.skins) {
+                var found_skin = await this.getSkin({uuid: skin.uuid});
+                if(found_skin) bundle.skins.push(found_skin);
+            }
+        }
+        return bundle;
+    }
+
+    async getBundleAndPrice(user_resolver: riot_user, bundle_resolver: bundle, skins:skin[]) {
+        var bundles = await this.getBundles();
+        if(!bundles) return;
+        var bundle = bundles.find(b => compareObjects(bundle_resolver, b));
+        if(!bundle) return;
+        bundle.skins = [];
+        bundle.price = 0;
+        bundle.discountPrice = 0;
+        var price = 0;
+        var discount_price = 0;
+        if(skins) {
+            var skin_temp:any;
+            for(skin_temp of skins) {
+                let skin = skin_temp["Item"];
+                var found_skin = await this.getSkinAndPrice(user_resolver, {uuid: skin["ItemID"]});
+
+                price = parseInt(skin_temp["BasePrice"]);
+                if(price) bundle.price = bundle.price + price;
+                
+                discount_price = parseInt(skin_temp["DiscountedPrice"]);
+                if(discount_price) bundle.discountPrice = bundle.discountPrice + discount_price;
+
+                if(found_skin) {
+                    if(!bundle.currency) bundle.currency = found_skin.currency;
+                    found_skin.price = price;
+
+                    found_skin.discountPrice = discount_price;
+
+                    bundle.skins.push(found_skin);
+                }
+                else this.client.log("debug", skin["ItemID"] + "wasn't a weapon skin");
+            }
+        }
+        return bundle;
+    }
+
     async getSkins(ignore_cache = false):Promise<skin[]|undefined> {
         if(!ignore_cache && this.cache.has("skins")) {
             return this.cache.get("skins")
@@ -66,8 +140,20 @@ export default class ValorantAPI {
         var request = await axios.get("https://valorant-api.com/v1/weapons/skinlevels").catch();
         if(!request) this.client.log("error", "Cannot fetch valorant skin lists");
         var skins:skin[] = request.data["data"];
+        this.client.log("debug", `Fetched ${skins.length} skins`)
         this.cache.set("skins", skins);
         return skins;
+    }
+
+    async getBundles(ignore_cache = false):Promise<bundle[]|undefined> {
+        if(!ignore_cache && this.cache.has("bundles")) {
+            return this.cache.get("bundles")
+        };
+        var request = await axios.get("https://valorant-api.com/v1/bundles").catch();
+        if(!request) this.client.log("error", "Cannot fetch valorant skin lists");
+        var bundles:bundle[] = request.data["data"];
+        this.cache.set("bundles", bundles);
+        return bundles;
     }
 
     async getCurrency(currency_resolver: currency) {
