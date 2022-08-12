@@ -14,10 +14,9 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
     var skins = shop.skins;
     var embeds:EmbedBuilder[] = [];
     for(let skin of skins) {
-        let embed = new EmbedBuilder().setAuthor({name: skin.displayName!}).setThumbnail(skin.displayIcon!).setDescription(`Prix : ${skin.price}`)
+        let embed = new EmbedBuilder().setAuthor({name: skin.displayName!}).setThumbnail(skin.displayIcon!).setDescription(`${skin.price} ${skin.currency?.displayName}`)
         embeds.push(embed)
     }
-
     interaction.editReply({embeds: embeds});
 }
   

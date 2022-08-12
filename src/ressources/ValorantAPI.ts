@@ -32,14 +32,21 @@ export default class ValorantAPI {
             skins: [],
             bundles: []
         };
+        
         var skin:string;
-        for(let skin_id of data["SkinsPanelLayout"]["SingleItemOffers"]) {
+        const skins = data["SkinsPanelLayout"]["SingleItemOffers"];
+        for(let skin_temp in skins) {
+            let skin_id = skins[skin_temp];
+            let currency_id = skin_temp;
             this.client.log("debug", `Looking for ${skin_id} skin`)
             let skin = await this.getSkin({uuid: skin_id})
             let price = await this.getSkinPrice(user_resolver, skin_id);
             
             if(skin) {
-                if(price) skin.price = price;
+                if(price) {
+                    skin.price = price.price;
+                    skin.currency = price.currency;
+                }
                 shop.skins.push(skin);
             }
         }
@@ -57,9 +64,28 @@ export default class ValorantAPI {
             return this.cache.get("skins")
         };
         var request = await axios.get("https://valorant-api.com/v1/weapons/skinlevels").catch();
+        if(!request) this.client.log("error", "Cannot fetch valorant skin lists");
         var skins:skin[] = request.data["data"];
         this.cache.set("skins", skins);
         return skins;
+    }
+
+    async getCurrency(currency_resolver: currency) {
+        var currencies = await this.getCurrencies();
+        if(!currencies) return;
+        return currencies.find(c => compareObjects(currency_resolver, c));
+    }
+
+    async getCurrencies(ignore_cache = false):Promise<currency[]|undefined> {
+        const CACHE_ID = "currencies";
+        if(!ignore_cache && this.cache.has(CACHE_ID)) {
+            return this.cache.get(CACHE_ID)
+        };
+        var request = await axios.get("https://valorant-api.com/v1/currencies").catch();
+        if(!request) this.client.log("error", "Cannot fetch valorant skin lists");
+        var currencies:currency[] = request.data["data"];
+        this.cache.set(CACHE_ID, currencies);
+        return currencies;
     }
 
     async getSkinPrice(user_data: riot_user, skin_id: string, ignore_cache = false) {
@@ -67,8 +93,15 @@ export default class ValorantAPI {
         if(!skin_prices) return;
         var price = skin_prices.find(s => skin_id == s.OfferID);
         if(!price) return;
-        price = price["Cost"]
-        return price[Object.keys(price)[0]];
+        price = price["Cost"];
+        var currency_id = Object.keys(price)[0];
+        var currency = await this.getCurrency({uuid: currency_id})
+        if(!currency) return;
+        var price_currency:{price: number, currency: currency} = {
+            price: price[currency_id],
+            currency: currency
+        } 
+        return price_currency;
     }
 
 
@@ -86,4 +119,45 @@ export default class ValorantAPI {
         return data;
     }
 
+    async getInventory(user_data : riot_user) {
+        const session = axios.create({headers: headers});
+        var request = await session.get(`https://pd.eu.a.pvp.net/personalization/v2/players/${user_data.id}/playerloadout`, {headers: {Authorization: `Bearer ${user_data.access_token}`, "X-Riot-Entitlements-JWT": user_data.entitlements_token!}}).catch(console.log);
+        if(!request) return;
+        console.log(request.data);
+        return request;
+    }
+
+    async getRecentMatchs(user_data : riot_user) {
+        const session = axios.create({headers: headers});
+        var request = await session.get(`https://pd.eu.a.pvp.net/match-history/v1/history/${user_data.id}?startIndex=0&endIndex=10`, {headers: {Authorization: `Bearer ${user_data.access_token}`, "X-Riot-Entitlements-JWT": user_data.entitlements_token!}}).catch(console.log);
+        if(!request) return;
+        console.log(request.data);
+        return request;
+    }
+
+    async getName(user_data : riot_user) {
+        var body = [user_data.id]
+        const session = axios.create({headers: headers});
+        var request = await session.put(`https://pd.eu.a.pvp.net/name-service/v2/players`, body, {headers: {Authorization: `Bearer ${user_data.access_token}`, "X-Riot-Entitlements-JWT": user_data.entitlements_token!}}).catch(console.log);
+        if(!request) return;
+        console.log(request.data);
+        return request;
+    }
+
+    async getWallet(user_data : riot_user) {
+        const session = axios.create({headers: headers});
+        var request = await session.get(`https://pd.eu.a.pvp.net/store/v1/wallet/${user_data.id}`, {headers: {Authorization: `Bearer ${user_data.access_token}`, "X-Riot-Entitlements-JWT": user_data.entitlements_token!}}).catch(console.log);
+        if(!request) return;
+        console.log(request.data);
+        return request;
+    }
+
+
+    async getRank(user_data : riot_user) {
+        const session = axios.create({headers: headers});
+        var request = await session.get(`https://pd.eu.a.pvp.net/contract-definitions/v2/definitions/story`, {headers: {Authorization: `Bearer ${user_data.access_token}`, "X-Riot-Entitlements-JWT": user_data.entitlements_token!}}).catch(console.log);
+        if(!request) return;
+        console.log(request.data);
+        return request;
+    }
 }

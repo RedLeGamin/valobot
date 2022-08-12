@@ -6,6 +6,7 @@ const ID_INPUT_USERNAME = "username";
 const ID_INPUT_PASS = "password";
 
 export async function run (client:ValoBot, interaction:CommandInteraction, args:string[], tool:any):Promise<any> {
+      
       // interaction.showModal(modal);
       // await interaction.deferReply({ephemeral: true});
 

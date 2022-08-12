@@ -60,6 +60,7 @@ interface skin {
     chromas?: {}[]
     levels?: {}[]
     price?: number
+    currency?: currency;
 }
 
 interface riot_user_info {
@@ -77,7 +78,7 @@ interface riot_user_info {
     age: number
     jti: string
     affinity: any
-  }
+}
 
 interface acct {
     type: number
@@ -86,4 +87,16 @@ interface acct {
     game_name: string
     tag_line: string
     created_at: number
+}
+
+interface currency {
+    uuid?: string
+    displayName?: string
+    displayNameSingular?: string
+    displayIcon?: string
+    largeIcon?: string
+}
+
+interface uuid_resolver {
+    uuid: string
 }

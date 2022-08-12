@@ -86,7 +86,6 @@ export default class ValoBot extends Client {
     }
 
     getLocale(language:string, strings:string[], ...vars:string[]) {
-        console.log("language =", language)
         var locale = lang[language];
         for(var string of strings) {
             locale = locale[string];
