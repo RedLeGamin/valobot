@@ -46,6 +46,7 @@ export default class ValorantAPI {
                 shop.skins.push(skin);
             }
         }
+        shop.skins?.sort((a, b) => b.price! - a.price!);
 
         for(let bundle_temp of bundles) {
             let bundle_id = bundle_temp["DataAssetID"];
@@ -59,6 +60,7 @@ export default class ValorantAPI {
             let bundle = await this.getBundleAndPrice(user_resolver, {uuid: bundle_id}, skins_resolver);
             
             if(bundle) {   
+                bundle.skins?.sort((a, b) => b.price! - a.price!);
                 shop.bundles.push(bundle);
             }
         }
@@ -238,6 +240,10 @@ export default class ValorantAPI {
         return request;
     }
 
+    // TODO: Resolve any Valorant items based on UUID type
+    async getItem() {
+
+    }
 
     async getRank(user_data : riot_user) {
         const session = axios.create({headers: headers});
