@@ -31,6 +31,7 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
             .setColor("#202225")
         embeds.push(embed)
     }
+    
     interaction.editReply({embeds: embeds});
 }
   

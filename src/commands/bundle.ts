@@ -17,6 +17,7 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
 
     for(let bundle of bundles) {
         let skins = bundle.skins;
+        let items = bundle.items;
         let embed = new EmbedBuilder()
             .setTitle(`Bundle en avant: ${bundle.displayName}`)
             .setImage(bundle.displayIcon!)
@@ -28,6 +29,14 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
             let embed = new EmbedBuilder()
                 .setThumbnail(skin.displayIcon!)
                 .setDescription(`> **${skin.displayName}**\n> ${skin.currency?.displayName} ${skin.price! > skin.discountPrice! ? `**${skin.discountPrice}** ~~${skin.price}~~` : `**${skin.price}**`}`)
+                .setColor("#202225")
+            embeds.push(embed)
+        }
+
+        if(items) for(let item of items) {
+            let embed = new EmbedBuilder()
+                .setThumbnail(item.displayIcon!)
+                .setDescription(`> **${item.displayName?.["fr-FR"]}**\n> ${item.currency?.displayName} ${item.price! > item.discountPrice! ? `**${item.discountPrice}** ~~${item.price}~~` : `**${item.price}**`}`)
                 .setColor("#202225")
             embeds.push(embed)
         }

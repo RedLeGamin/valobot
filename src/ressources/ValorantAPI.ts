@@ -1,7 +1,7 @@
 import axios from "axios"
 import ValoBot from "./Client";
 import NodeCache from "node-cache"
-import { headers } from "./WebContent"
+import { headers, endpoints } from "./WebContent"
 import compareObjects from "../utils/compareObjects";
 
 export default class ValorantAPI {
@@ -28,7 +28,9 @@ export default class ValorantAPI {
         var request = await session.get(`https://pd.eu.a.pvp.net/store/v2/storefront/${user_resolver.id}`, {headers: {Authorization: `Bearer ${user_resolver.access_token}`, "X-Riot-Entitlements-JWT": user_resolver.entitlements_token!}}).catch(console.log);
         if(!request) return;
         var data = request.data;
-        console.log(data["FeaturedBundle"])
+
+        
+        // TODO: Add time remaining for offers
         var shop: {skins: skin[], bundles: bundle[]}= {
             skins: [],
             bundles: []
@@ -105,6 +107,7 @@ export default class ValorantAPI {
         var bundle = bundles.find(b => compareObjects(bundle_resolver, b));
         if(!bundle) return;
         bundle.skins = [];
+        bundle.items = [];
         bundle.price = 0;
         bundle.discountPrice = 0;
         var price = 0;
@@ -114,7 +117,6 @@ export default class ValorantAPI {
             for(skin_temp of skins) {
                 let skin = skin_temp["Item"];
                 var found_skin = await this.getSkinAndPrice(user_resolver, {uuid: skin["ItemID"]});
-
                 price = parseInt(skin_temp["BasePrice"]);
                 if(price) bundle.price = bundle.price + price;
                 
@@ -129,7 +131,19 @@ export default class ValorantAPI {
 
                     bundle.skins.push(found_skin);
                 }
-                else this.client.log("debug", skin["ItemID"] + "wasn't a weapon skin");
+                else {
+                    // this.client.log("debug", skin["ItemID"] + " wasn't a weapon skin");
+                    var found_item = await this.getItem({uuid: skin["ItemID"], uuid_type: skin["ItemTypeID"]});
+                    
+                    if(found_item) {    
+                        //@ts-ignore
+                        found_item.currency = bundle.currency ?? (await this.getCurrencies())[0];
+                        found_item.price = price;
+                        found_item.discountPrice = discount_price;
+                        bundle.items.push(found_item);
+                    }
+                }
+                
             }
         }
         return bundle;
@@ -211,7 +225,6 @@ export default class ValorantAPI {
         const session = axios.create({headers: headers});
         var request = await session.get(`https://pd.eu.a.pvp.net/personalization/v2/players/${user_data.id}/playerloadout`, {headers: {Authorization: `Bearer ${user_data.access_token}`, "X-Riot-Entitlements-JWT": user_data.entitlements_token!}}).catch(console.log);
         if(!request) return;
-        console.log(request.data);
         return request;
     }
 
@@ -219,7 +232,6 @@ export default class ValorantAPI {
         const session = axios.create({headers: headers});
         var request = await session.get(`https://pd.eu.a.pvp.net/match-history/v1/history/${user_data.id}?startIndex=0&endIndex=10`, {headers: {Authorization: `Bearer ${user_data.access_token}`, "X-Riot-Entitlements-JWT": user_data.entitlements_token!}}).catch(console.log);
         if(!request) return;
-        console.log(request.data);
         return request;
     }
 
@@ -228,7 +240,6 @@ export default class ValorantAPI {
         const session = axios.create({headers: headers});
         var request = await session.put(`https://pd.eu.a.pvp.net/name-service/v2/players`, body, {headers: {Authorization: `Bearer ${user_data.access_token}`, "X-Riot-Entitlements-JWT": user_data.entitlements_token!}}).catch(console.log);
         if(!request) return;
-        console.log(request.data);
         return request;
     }
 
@@ -236,20 +247,47 @@ export default class ValorantAPI {
         const session = axios.create({headers: headers});
         var request = await session.get(`https://pd.eu.a.pvp.net/store/v1/wallet/${user_data.id}`, {headers: {Authorization: `Bearer ${user_data.access_token}`, "X-Riot-Entitlements-JWT": user_data.entitlements_token!}}).catch(console.log);
         if(!request) return;
-        console.log(request.data);
         return request;
     }
 
     // TODO: Resolve any Valorant items based on UUID type
-    async getItem() {
+    async getItem(item_resolver: {uuid: string, uuid_type: string}) {
+        const { valorant_api } = endpoints;
+        var type = this.getItemType(item_resolver.uuid_type);
+        if(!type) return this.client.log("debug", `The fuck is item type of uuid_type ${item_resolver.uuid_type}`);
+        //@ts-ignore
+        var uri = valorant_api[`link_${type}`];
+        if(!uri) return;
+        uri = `${uri}/${item_resolver.uuid}?${valorant_api.parameters.all_languages}`;
 
+        const session = axios.create({headers: headers});
+        var request = await session.get(uri).catch(() => console.log(`Cannot find item type ${type} with uuid ${item_resolver.uuid}`))
+        if(!request) return;
+        var item:base_item = request.data.data
+        return item;
+
+    }
+
+    getItemType(uuid_type: string) {
+        return item_ids[uuid_type];
     }
 
     async getRank(user_data : riot_user) {
         const session = axios.create({headers: headers});
-        var request = await session.get(`https://pd.eu.a.pvp.net/contract-definitions/v2/definitions/story`, {headers: {Authorization: `Bearer ${user_data.access_token}`, "X-Riot-Entitlements-JWT": user_data.entitlements_token!}}).catch(console.log);
+        var request = await session.get(`https://shared.eu.a.pvp.net/content-service/v2/content`, {headers: {Authorization: `Bearer ${user_data.access_token}`, "X-Riot-Entitlements-JWT": user_data.entitlements_token!, "X-Riot-ClientVersion": "release-05.03-shipping-8-745499"}}).catch(console.log);
         if(!request) return;
         console.log(request.data);
         return request;
     }
 }
+
+const item_ids:any = {
+    "e7c63390-eda7-46e0-bb7a-a6abdacd2433": "skin_level",
+    "3ad1b2b2-acdb-4524-852f-954a76ddae0a": "skin_chroma",
+    "01bb38e1-da47-4e6a-9b3d-945fe4655707": "agent",
+    "f85cb6f7-33e5-4dc8-b609-ec7212301948": "contract_definition",
+    "dd3bf334-87f3-40bd-b043-682a57a8dc3a": "buddy",
+    "d5f120f8-ff8c-4aac-92ea-f2b5acbe9475": "spray",
+    "3f296c07-64c3-494c-923b-fe692a4fa1bd": "player_card",
+    "de7caa6b-adf7-4588-bbd1-143831e786c6": "player_title"
+  }

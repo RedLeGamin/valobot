@@ -52,5 +52,20 @@ export const endpoints = {
                 "Authorization": "Bearer {access_token}"
             }
         }
+    },
+    valorant_api: {
+        skin_level: "https://valorant-api.com/v1/weapons/skinlevels",
+        link_skin_chroma: "https://valorant-api.com/v1/weapons/skinchromas",
+        link_agent: "https://valorant-api.com/v1/agents",
+        link_contract: "https://valorant-api.com/v1/contracts",
+        link_buddy: "https://valorant-api.com/v1/buddies/levels",
+        link_spray: "https://valorant-api.com/v1/sprays",
+        link_player_card: "https://valorant-api.com/v1/playercards",
+        link_player_title: "https://valorant-api.com/v1/playertitles",
+        parameters: {
+            all_languages: "language=all",
+            specific_language: "language={language}"
+        }
     }
 }
+
