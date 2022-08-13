@@ -26,9 +26,8 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
 
     for(let skin of skins) {
         let embed = new EmbedBuilder()
-            .setAuthor({name: skin.displayName!})
             .setThumbnail(skin.displayIcon!)
-            .setDescription(`${skin.currency?.displayName} **${skin.price}**`)
+            .setDescription(`${skin.displayName}\n${skin.currency?.displayName} **${skin.price}**`)
             .setColor("#202225")
         embeds.push(embed)
     }

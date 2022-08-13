@@ -45,7 +45,7 @@ export default async function loader(this: ValoBot) {
 
     this.embedColor = config.embedColor ? config.embedColor : "#ffffff";
 
-    if(this.readyAt != null && this.user) {
+    if(this.isReady()) {
         this.user.setActivity(
             `${await this.db.fetchUserSize()} Users`, {
               type: this.config.status.type
