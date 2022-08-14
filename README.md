@@ -1,4 +1,4 @@
-g# ValoBot
+# ValoBot
 
 Proof of concept Discord Bot for the usage of Riot/Valorant API, created in a few days<br>
 This is also a test project for me to use TypeScript & Supabase for the first time (so useful)
