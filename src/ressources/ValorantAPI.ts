@@ -213,6 +213,7 @@ export default class ValorantAPI {
             return this.cache.get(CACHE_ID);
         };
         const session = axios.create({headers: headers, withCredentials: true});
+        // Not using the user_data.region since the database is currently not storing it by default
         var request = await session.get(`https://pd.eu.a.pvp.net/store/v1/offers/`, {headers: {Authorization: `Bearer ${user_data.access_token}`, "X-Riot-Entitlements-JWT": user_data.entitlements_token!}}).catch(console.log);
         if(!request) return;
         var data:any[] = request.data["Offers"];
@@ -250,7 +251,6 @@ export default class ValorantAPI {
         return request;
     }
 
-    // TODO: Resolve any Valorant items based on UUID type
     async getItem(item_resolver: {uuid: string, uuid_type: string}) {
         const { valorant_api } = endpoints;
         var type = this.getItemType(item_resolver.uuid_type);

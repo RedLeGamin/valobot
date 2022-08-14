@@ -17,7 +17,7 @@ export async function run (client: ValoBot, interaction: ModalSubmitInteraction,
     if (auth.security_type == "response") {
         await client.db.createUser({id: interaction.user.id});
         await client.db.createRiotUser({ user_id: interaction.user.id, ...auth.riot_data })
-        interaction.reply("Le login a marché mais flm de coder le reste");
+        interaction.reply("Le login a marché");
     }
     else if (auth.security_type == "multifactor") {
         // interaction.reply("2AF detecté t'es ce genre de mec chiant toi")
@@ -25,7 +25,7 @@ export async function run (client: ValoBot, interaction: ModalSubmitInteraction,
     else interaction.reply("Une erreur a eu lieu")
 }   
 
-const modalBuilder = new ModalBuilder().setCustomId("login").setTitle("🔒We do not store login infos");
+const modalBuilder = new ModalBuilder().setCustomId("login").setTitle("🔒No credentials is stored");
 
 const emailInput = new TextInputBuilder().setCustomId(ID_INPUT_USERNAME)
     .setLabel("Valorant Username")

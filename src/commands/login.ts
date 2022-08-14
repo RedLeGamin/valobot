@@ -33,18 +33,18 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
   
 export const slash = {
       "name": "login",
-      "description": "Login with your riot account",
+      "description": "Connecte un compte Riot au bot",
       "options": [
             {
                   "type": 3,
                   "name": "username",
-                  "description": "Riot Username",
+                  "description": "Pseudo Riot",
                   "required": true
             },
             {
                   "type": 3,
                   "name": "password",
-                  "description": "Riot Password",
+                  "description": "Mot de passe Riot",
                   "required": true
             }
       ],

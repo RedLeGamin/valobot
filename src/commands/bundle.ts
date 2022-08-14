@@ -4,13 +4,13 @@ import ValoBot from "src/ressources/Client";
 export async function run (client:ValoBot, interaction:CommandInteraction, args:string[], tool:any):Promise<any> {
     interaction.deferReply();
     var user = await client.db.getUser(interaction.user);
-    if(!user) return interaction.editReply("Hahaha t'es pas register ^^");
-    if(!user.riot_users.length) return interaction.editReply("Dis donc t'as pas mis de compte riot ou quoi XD");
+    if(!user) return interaction.editReply("Pas de compte riot lié à ton compte Discord (utilise /login)");
+    if(!user.riot_users.length) return interaction.editReply("Pas de compte riot lié à ton compte Discord (utilise /login)");
     var user_riot = user.riot_users[0];
     var refresh = await user_riot.refreshCookies();
     if(!refresh) return interaction.editReply("Cookies expired");
     var shop = await user_riot.getShop();
-    if(!shop) return interaction.editReply("Meccc t'as pas de shop wtf!!?");
+    if(!shop) return interaction.editReply("Impossible de récuperer le shop");
     
     var bundles = shop.bundles;
     var embeds:EmbedBuilder[] = [];
@@ -22,7 +22,7 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
             .setTitle(`Bundle en avant: ${bundle.displayName}`)
             .setImage(bundle.displayIcon!)
             .setDescription(`${bundle.currency?.displayName} **${bundle.discountPrice}** ~~${bundle.price}~~`)
-            .setColor("#ff4655")
+            .setColor("#5865F2")
         embeds.push(embed)
 
         if(skins) for(let skin of skins) {
@@ -46,5 +46,5 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
   
 export const slash = {
     "name": "bundle",
-    "description": "Affiche tes putains de bundles"
+    "description": "Affiche tes de bundles"
 }

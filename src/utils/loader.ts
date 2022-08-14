@@ -17,7 +17,7 @@ export default async function loader(this: ValoBot) {
         .filter((file: string) => file.endsWith(".js") || file.endsWith(".ts"));
       
     this.commandsDelay = new Map();
-    var commandsSlash = [];
+    var commands_slash = [];
       for (const file of commandFiles) {
         var file_location = __dirname + `/../commands/${file}`
         try {
@@ -27,7 +27,7 @@ export default async function loader(this: ValoBot) {
         var commandName = file.split(".")[0]
         this.commandsDelay.set(commandName, new Map());
         this.log("debug", "Loaded command /" + commandName)
-        if(typeof command.slash == "object") commandsSlash.push(command.slash);
+        if(typeof command.slash == "object") commands_slash.push(command.slash);
       }
 
       for (const file of modalsFiles) {
@@ -57,7 +57,7 @@ export default async function loader(this: ValoBot) {
               this.log("loader", 'Started refreshing application (/) commands.');
                 await rest.put(
                     Routes.applicationCommands(this.application.id),
-                    { body: commandsSlash },
+                    { body: commands_slash },
                   );
                   this.log("loader", 'Successfully reloaded application (/) commands.');
             } catch (error) {

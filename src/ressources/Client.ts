@@ -1,4 +1,4 @@
-import { Client, ClientOptions } from "discord.js";
+import { Client, ClientOptions, ColorResolvable } from "discord.js";
 import NodeCache from "node-cache";
 import loader from "../utils/loader";
 import RiotAuth from "./RiotAuth";
@@ -26,7 +26,7 @@ export default class ValoBot extends Client {
     lastInteractionId: string | undefined;
     commandsDelay: Map < any, any > ;
     config: config;
-    embedColor: string;
+    embedColor: ColorResolvable;
     hotload: boolean;
     debug: boolean;
     riotAuth: RiotAuth;
@@ -43,7 +43,7 @@ export default class ValoBot extends Client {
         this.cache = new NodeCache();
         this.commandsDelay = new Map();
         this.config = config;
-        this.embedColor = "#ffffff";
+        this.embedColor = "#5865F2";
         this.hotload = config.hotload;
         this.debug = config.debug ?? false;
 

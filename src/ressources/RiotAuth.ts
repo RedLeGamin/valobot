@@ -10,7 +10,7 @@ export default class RiotAuth {
         this.client = client;
     }
 
-    async init_cookies() {
+    async initCookies() {
         var { authorization } = endpoints;
         const session = axios.create({headers: headers, withCredentials: true});
 
@@ -29,7 +29,7 @@ export default class RiotAuth {
 
         var body:any = endpoints.authorization.bodys.post;
         
-        if(!cookies) cookies = await this.init_cookies();
+        if(!cookies) cookies = await this.initCookies();
         if(!cookies) return this.client.log("error", "Cannot init cookies for authentification");
 
         body = authorization.bodys.put;
@@ -105,7 +105,7 @@ export default class RiotAuth {
         var body: any = authorization.bodys.put_2f;
         body.code = code;
 
-        if(!cookies) cookies = await this.init_cookies();
+        if(!cookies) cookies = await this.initCookies();
         if(!cookies) return this.client.log("error", "Cannot init cookies for 2F authentification");
 
         // TODO: Fix request fail
@@ -173,7 +173,7 @@ export default class RiotAuth {
         return entitlements_token;
     }
 
-    async refresh_token(cookies: string) {
+    async refreshToken(cookies: string) {
 
         var { authorization } = endpoints;
 

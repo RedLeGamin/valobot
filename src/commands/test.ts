@@ -2,6 +2,7 @@ import { ActionRowBuilder, CommandInteraction, Message, ModalBuilder, TextInputB
 import ValoBot from "src/ressources/Client";
 
 export async function run (client:ValoBot, message:CommandInteraction, args:string[], tool:any):Promise<any> {
+      return;
       
       const modal = new ModalBuilder().setCustomId(Date.now() + "modal").setTitle("🔒We do not store login infos");
 

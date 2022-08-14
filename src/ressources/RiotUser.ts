@@ -24,17 +24,18 @@ export default class RiotUser implements riot_user {
         this.cookies = user_data.cookies ?? "";
     }
 
+    /*
     cookiesToText() {
         return `tdid=${this.token_id}`
-    }
+    }*/
 
-    need_refresh() {
+    needRefresh() {
         return Date.now() > this.expiry_token;
     }
 
     async refreshCookies(force = false) {
-        if(!force && !this.need_refresh()) return this.cookies;
-        var cookies = await this.client.riotAuth.refresh_token(this.cookies);
+        if(!force && !this.needRefresh()) return this.cookies;
+        var cookies = await this.client.riotAuth.refreshToken(this.cookies);
         if(!cookies) return;
         this.cookies = cookies.cookies
         this.access_token = cookies.access_token

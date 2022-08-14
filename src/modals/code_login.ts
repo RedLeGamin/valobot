@@ -6,10 +6,9 @@ const ID_INPUT_CODE = "code";
 export async function run (client: ValoBot, interaction: ModalSubmitInteraction, tools: any) {
     await interaction.deferReply({ephemeral: true});
     var user = await client.db.getUser({id: interaction.user.id});
-    if(!user) return interaction.reply("Une erreur a eu lieu")
+    if(!user) return interaction.reply("Une erreur a eu lieu");
 
     var code = interaction.fields.getTextInputValue(ID_INPUT_CODE);
-    //@ts-ignore
     var auth = await client.riotAuth.authenticate2FA(code, user.cookies);
     if(!auth) return interaction.reply("Une erreur a eu lieu");
 

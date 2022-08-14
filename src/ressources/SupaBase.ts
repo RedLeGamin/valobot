@@ -4,7 +4,7 @@ import User from './User';
 import ValoBot from './Client';
 import RiotUser from './RiotUser';
 
-const supabaseUrl = 'https://hezbdncmoixrjvgvlcjt.supabase.co';
+const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 

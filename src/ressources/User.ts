@@ -36,9 +36,4 @@ export default class User implements user {
     update(user_data: db_user) {
         return this.client.db.updateUser(this.id, user_data).catch((e) => this.client.log("error", e));
     }
-
-    has_riot_accounts() {
-        return this.riot_users.length > 0
-    }
-    
 }
