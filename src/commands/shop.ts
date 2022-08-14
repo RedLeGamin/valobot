@@ -15,12 +15,10 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
     // var bundles = shop.bundles;
     var embeds:EmbedBuilder[] = [];
 
-    
-
     for(let skin of skins) {
         let embed = new EmbedBuilder()
             .setThumbnail(skin.displayIcon!)
-            .setDescription(`${skin.displayName}\n${skin.currency?.displayName} **${skin.price}**`)
+            .setDescription(`> ${skin.displayName}\n> ${skin.currency?.displayName} **${skin.price}**`)
             .setColor("#202225")
         embeds.push(embed)
     }
@@ -30,5 +28,5 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
   
 export const slash = {
     "name": "shop",
-    "description": "Affiche ton putain de shop"
+    "description": "Affiche ton shop"
 }

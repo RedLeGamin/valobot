@@ -46,5 +46,5 @@ export async function run (client:ValoBot, interaction:CommandInteraction, args:
   
 export const slash = {
     "name": "bundle",
-    "description": "Affiche tes de bundles"
+    "description": "Affiche tes bundles"
 }
